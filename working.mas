@@ -28,7 +28,7 @@ checkallnegatives, load n
     // When n minus k is equal to 1 the bionomial coeff is equal to zero
     // n! / ((k!)(1!))  => n! / k! => (as n == k +1)  => (k + 1 )! / k!
     // EXAMPLE n=5 , k=4 , nlessk = 5-4 = 1
-    //         5! / (4!)(1!)  =>   5! / 4!  => (5x4x3x2x1) / (4x3x2x1) => (5 x 24 ) / 24 => 
+    //         5! / (4!)(1!)  =>   5! / 4!  => (5)(4x3x2x1) / (4x3x2x1) => (5 x 24 ) / 24 => 5/1
     //          The 24's (4! or k!) can be canceled out  =>  120 / 24 => 5 which is = n 
 
 
@@ -70,8 +70,6 @@ multiplykbynlessk, load kfact
     JnS jumpintomultiply
     load x 
     store ktimesnkdif
- 
-
 
 // finishing equation
 //dividing n! by k!(n-k)!       OR   nfact / ktimesnkdif
@@ -82,7 +80,6 @@ dividenbythemultiple,load nfact
     jump divideloop
 //              END OF FACTORIAL 
 executefactorial, HEX 011
-	 
     JnS setfact
     JnS jumpintofactloop
  
@@ -92,7 +89,6 @@ executefactorial, HEX 011
 checkForBioZero, HEX 002
         load nlessk
 		subt one
-    	 
         store biodif
 		skipcond 000 //this is so messy  //go back to work
     	JumpI checkForBioZero
@@ -103,23 +99,21 @@ checkForBioOne,  HEX 003
     load nlessk
     load biodif
 	//subt one
-     
     skipcond 400//go back to work
     JumpI checkForBioOne
     //if it is =0, meaning dif was 1
     jump biosolvedifone
 
 biosolvedifone, load n
-	 
+    output
     halt
 biosolvedifzero, load one
-	  
+    output
     halt
 //END BIONOMIAL CHECKS
 
 //NEGATIVE CHECK
 checkneg, HEX 001
-     
 	skipcond 000
     JumpI checkneg
     jump AskInput
@@ -130,13 +124,9 @@ checkneg, HEX 001
 setfact, HEX 000
   //  load n 
     store fact //double check we are still looking at same number as n // here and below
-     
     store nlessone
-     
     subt one
     subt one
-      
-
     //BEGIN EXCLUDING 2 from FACTORIAL
     // If the current ac is 1 or higher do not deduct any more
     //this prevent 3 from being rejected for the factorial equation
@@ -158,18 +148,12 @@ setfact, HEX 000
 //because i need factloop to be continuous while count >0
 // here fact loop will jump back then jump out of check count after one iteration
 checkcount, HEX 007
-
-
     // is it here we stor the x in fact
     load x 
-     
     store fact 
-     
     load zero
     store x 
-     
     load count
-     
     skipcond 400
     jump factloop // maybe not Jns is skipcond?
     jumpI checkcount
@@ -178,43 +162,32 @@ checkcount, HEX 007
 
 setCountForFact, HEX 004
     load count
-     
     add fact
-     
     store count
-     
     subt one
-     
     subt one
-     
     store count
-     
     JumpI setCountForFact
 setCountzero, load zero
     store count
 
 jumpintofactloop, HEX 006
     jump factloop
+
+
+//INCORRECT FORM WHEN COMMENTS BELOW REMOVED?
 factloop, JnS reducingcountandnlessone//                                               HEX 002
-
 // i need to be loading x and storing it in the temporary fact
-
-
  //   load nlessone  subt one store nlessone load count  subt one store count
    //                                                                                JnS reducingcountandnlessone
     load fact
     store y
-     
     load nlessone
-     
     store z
     //jump multiplication here
-   /////                                                     JnS multiplicationLoop
+    /////                                                     JnS multiplicationLoop
     //check count then remultiply or checkout
-
     JnS jumpintomultiply
-
-
     //if I check count here
     // while count is negative --?
     //if neg -> checkouts of check count
@@ -227,66 +200,38 @@ factloop, JnS reducingcountandnlessone//                                        
 
 reducingcountandnlessone,  HEX 005
     load nlessone
-     
     subt one
-     
     store nlessone
-     
     load count
-     
     subt one
     //jump out of the factorial loop if the count has reduced to -1 at this point
     // this case will only happen if the number being set is 2. as number sets as count -2 , 
     //resulting in 0.  and will be minus one in the next loop
-
-//its breaking it, factorials arent finishng
-
-    //CONSIDER INSERTING A PROTECTION AGAINST THIS EARLY ON
-
-     
     store count
-     
     jumpI reducingcountandnlessone
 
 //multi works
 multiplicationLoop,  load x //value 0 -- double check this remains at zero
-	 
 	add y // will represent no to be multiplied
-     
     store x
-     
     load z //will rep multplier
-     
     subt one
     store z
-    //double check this
-    //if count is
-    
-    //if z is 0 we produce the ans else we return to the multiplication
-  
-     
     skipcond 400
     jump multiplicationLoop
     load y
-     
     jumpI jumpintomultiply
    //  
 // we should load into y z // could always use x here for the bicoed
 divideloop,	load biocoef
 	add one
-     
 	store biocoef
-     
 	load y //number to be divided e.g. fact n
-     
 	subt z //number to divide by e.g. kfact * nfactlessk
-     
     store y
-     
     skipcond 400 // check for zero
     jump divideloop// if not zero continue dividing
     load biocoef //else load the bionomial coeficient
- 	 
     jump finish 
 
 finish, load biocoef
